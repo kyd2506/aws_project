@@ -1,20 +1,17 @@
 ---
-- name: Remove nginx on CentOS
-  hosts: CentOS
-  gather_facts: no
+- name: Remove nginx on the nodes
+  hosts: nodes
   become: yes
 
   tasks:
-    - name: remove epel-release
-      yum: name=epel-release state=absent
-    - name: remove nginx web server
-      yum: name=nginx state=absent
+    - name: remove epel-release for CentOS
+      action: "{{ ansible_pkg_mgr }} name=epel-release state=absent"
+      when: ansible_distribution == 'CentOS'
 
-- name: Remove nginx on Ubuntu
-  hosts: Ubuntu
-  gather_facts: no
-  become: yes
+    - name: remove nginx web server for CentOS
+      action: "{{ ansible_pkg_mgr }} name=nginx state=absent"
+      when: ansible_distribution == 'CentOS'
 
-  tasks:
     - name: remove nginx web server
-      yum: pkg=nginx state=absent autoremove=yes
+      action: "{{ ansible_pkg_mgr }} name=nginx state=absent autoremove=yes"
+      when: ansible_distribution == 'Ubuntu'
